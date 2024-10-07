@@ -1,10 +1,13 @@
 <script>
-	import { resources } from '../resources';
-	import { categories } from '../categories';
+	import { page } from '$app/stores';
+
+	import { resources } from '../../resources';
+	let name = $page.params.specific.toLowerCase();
+	// console.log(name);
 </script>
 
 <svelte:head>
-	<title>All Apis - Free APIs Collection</title>
+	<title>{name} - Free APIs Collection</title>
 	<meta
 		name="description"
 		content="Discover a curated collection of free public APIs across various categories. Enhance your applications with easy access to weather, finance, and other essential data."
@@ -35,119 +38,87 @@
 	<meta name="twitter:url" content="https://free-apis-zeta.vercel.app/" />
 </svelte:head>
 
-<header class="all-apis-header">
-	<h1 class="all-apis-title" aria-level="1">All APIs</h1>
-	<div class="all-apis-nav-links">
-		<a href="./" rel="noopener noreferrer" class="all-apis-nav-link">Home</a>
-		<a href="./categories" rel="noopener noreferrer" class="all-apis-nav-link">All Categories</a>
-	</div>
-</header>
+<div class="container">
+	<div class="api-catalog" role="region" aria-labelledby="api-categories">
+		<h1 id="api-categories" class="visually-hidden">API Categories</h1>
+		<header>
+			<h2
+				class="category-title"
+				style="font-size: 1.5rem;
+                 font-weight: 600;
+                 color: #E5E7EB;
+                 margin-bottom: 1.5rem;
+                 padding-bottom: 0.5rem;"
+				aria-level="1"
+			>
+				{name[0].toUpperCase() + name.slice(1)}
+			</h2>
 
-<hr class="all-apis-divider" />
-
-<div class="all-apis-container">
-	<div class="all-apis-catalog" role="region" aria-labelledby="all-apis-categories">
-		<h1 id="all-apis-categories" class="all-apis-visually-hidden">API Categories</h1>
-		{#each categories.entries as category}
-			<section class="all-apis-category-section">
-				<h2 class="all-apis-category-title">{category.name}</h2>
-				<div class="all-apis-card-grid">
-					{#each resources.entries.filter((ele) => ele.Category === category.name) as resource}
-						<a
-							target="_blank"
-							href={resource.Link}
-							class="all-apis-card"
-							aria-labelledby={`${resource.API}-title`}
-						>
-							<div class="all-apis-card-header">
-								<h3 id={`${resource.API}-title`} class="all-apis-card-title">{resource.API}</h3>
-								<div class="all-apis-status-badges">
-									<span
-										class="all-apis-badge all-apis-auth-badge"
-										class:open={resource.Auth === ''}
-									>
-										{resource.Auth === '' ? 'Open' : resource.Auth}
-									</span>
-									<span class="all-apis-badge" class:available={resource.HTTPS}>HTTPS</span>
-									<span class="all-apis-badge" class:available={resource.Cors === 'yes'}>CORS</span>
-								</div>
+			<div class="header-links">
+				<a href="./../" class="header-link">Home</a>
+				<a href="./" class="header-link">Categories</a>
+				<a href="./../all-apis" class="header-link">View All</a>
+			</div>
+		</header>
+		<hr style="border-bottom: 1px solid #374151; margin-top:-10px;" />
+		<section class="category-section">
+			<div class="card-grid">
+				{#each resources.entries.filter((ele) => ele.Category.toLowerCase() === name) as resource}
+					<a
+						style="text-decoration: none;"
+						href={resource.Link}
+						class="card"
+						aria-labelledby={`${resource.API}-title`}
+					>
+						<div class="card-header">
+							<h3 id={`${resource.API}-title`} class="card-title">{resource.API}</h3>
+							<div class="status-badges">
+								<span class="badge auth-badge" class:open={resource.Auth === ''}>
+									{resource.Auth === '' ? 'Open' : resource.Auth}
+								</span>
+								<span class="badge" class:available={resource.HTTPS}>HTTPS</span>
+								<span class="badge" class:available={resource.Cors === 'yes'}>CORS</span>
 							</div>
-							<p class="all-apis-card-description">{resource.Description}</p>
-						</a>
-					{/each}
-				</div>
-			</section>
-		{/each}
+						</div>
+						<p class="card-description">{resource.Description}</p>
+					</a>
+				{/each}
+			</div>
+		</section>
 	</div>
 </div>
 
 <style>
 	/* Container and Global Styles */
-	.all-apis-container {
+	.container {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 2rem;
 	}
 
-	/* Header Styles */
-	.all-apis-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.all-apis-title {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: #e5e7eb;
-		margin-bottom: 1.5rem;
-		padding-bottom: 0.5rem;
-	}
-
-	.all-apis-nav-links {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.all-apis-nav-link {
-		color: #7dd3fc;
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-
-	.all-apis-nav-link:hover {
-		color: #3b82f6;
-	}
-
-	/* Divider Styles */
-	.all-apis-divider {
-		border-bottom: 1px solid #374151;
-		margin-top: -10px;
-	}
-
 	/* Category Styles */
-	.all-apis-category-section {
+	.category-section {
 		margin-bottom: 3rem;
 	}
 
-	.all-apis-category-title {
+	.category-title {
 		font-size: 1.5rem;
 		font-weight: 600;
 		color: #e5e7eb;
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid #374151;
+		/* border-bottom: 1px solid #374151; */
 	}
 
 	/* Card Grid */
-	.all-apis-card-grid {
+	.card-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1.5rem;
 	}
 
 	/* Card Styles */
-	.all-apis-card {
+	.card {
 		background-color: #1f2937;
 		border: 1px solid #374151;
 		border-radius: 0.5rem;
@@ -155,31 +126,30 @@
 		transition:
 			transform 0.2s,
 			box-shadow 0.2s;
-		text-decoration: none;
 	}
 
-	.all-apis-card:hover {
+	.card:hover {
 		transform: translateY(-2px);
 		box-shadow:
 			0 4px 6px -1px rgba(0, 0, 0, 0.1),
 			0 2px 4px -1px rgba(0, 0, 0, 0.06);
 	}
 
-	.all-apis-card-header {
+	.card-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
 		margin-bottom: 1rem;
 	}
 
-	.all-apis-card-title {
+	.card-title {
 		font-size: 1.125rem;
 		font-weight: 600;
 		color: #60a5fa;
 		margin: 0;
 	}
 
-	.all-apis-card-description {
+	.card-description {
 		font-size: 0.875rem;
 		color: #9ca3af;
 		line-height: 1.5;
@@ -187,13 +157,34 @@
 	}
 
 	/* Badge Styles */
-	.all-apis-status-badges {
+	.status-badges {
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
 
-	.all-apis-badge {
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.header-links {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.header-link {
+		color: #60a5fa;
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.header-link:hover {
+		text-decoration: underline;
+	}
+
+	.badge {
 		font-size: 0.75rem;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
@@ -201,23 +192,23 @@
 		color: #9ca3af;
 	}
 
-	.all-apis-badge.available {
+	.badge.available {
 		background-color: #065f46;
 		color: #a7f3d0;
 	}
 
-	.all-apis-auth-badge {
+	.auth-badge {
 		background-color: #3730a3;
 		color: #c7d2fe;
 	}
 
-	.all-apis-auth-badge.open {
+	.auth-badge.open {
 		background-color: #065f46;
 		color: #a7f3d0;
 	}
 
 	/* Accessibility */
-	.all-apis-visually-hidden {
+	.visually-hidden {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -231,15 +222,15 @@
 
 	/* Responsive Design */
 	@media (max-width: 768px) {
-		.all-apis-container {
+		.container {
 			padding: 1rem;
 		}
 
-		.all-apis-card-grid {
+		.card-grid {
 			grid-template-columns: 1fr;
 		}
 
-		.all-apis-category-title {
+		.category-title {
 			font-size: 1.25rem;
 		}
 	}
